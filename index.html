@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>jscad/dxf-serializer - Browser Sample</title>
+
+    <script src="dxf-deserializer.js"></script>
+    <script src="dxf-serializer.js"></script>
+  </head>
+  <body>
+    <input id="file-field" type="file" />
+    <button id="to-file">Get file</button>
+    <pre id="output" stlye="font-family: monospace;"></pre>
+    <script>
+      let objs;
+      var outputElement = document.getElementById("output");
+      document.getElementById("file-field").onchange = function () {
+        var reader = new FileReader();
+        reader.readAsText(this.files[0]);
+        reader.onload = function (e) {
+          var fileText = e.target.result;
+          objs = deserialize(fileText, "file", { output: "csg" });
+
+          console.log("Success!");
+          outputElement.innerHTML = JSON.stringify(objs, null, 4);
+        };
+      };
+
+      document.querySelector("#to-file").addEventListener("click", () => {
+        let str = serialize(objs);
+        let link = document.createElement("a");
+
+        let file = new Blob([str], { type: "text/plain" });
+        link.setAttribute("href", URL.createObjectURL(file));
+        link.setAttribute("download", "data.dxf");
+        link.click();
+        return false;
+      });
+    </script>
+  </body>
+</html>
